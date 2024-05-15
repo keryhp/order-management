@@ -7,6 +7,7 @@ create table ordertbl
    amount integer not null,
    price integer not null,
    source varchar(64),
+   status varchar(64),
    created_on timestamp with time zone,
    updated_on timestamp with time zone
 );

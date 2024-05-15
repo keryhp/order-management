@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.interview.ordermanagement.constants.Side;
 
 import java.time.Instant;
-import java.util.UUID;
+//import java.util.UUID;
 
 @Entity
 @Table(name = "ordertbl")
@@ -36,7 +36,8 @@ public class Order {
     //private Double price;
     private Integer price;
 
-    @Column(nullable = false)
+    private String status;
+
     private String source;
 
     private Instant createdOn;
