@@ -1,5 +1,7 @@
 ### Coding Challenge - Order Management
 
+### Part 1 - Order Management Application
+
 The task is to build an Order Management system able to calculate instrument prices and trade with clients.
 
 Please see the attached PDF under /resources/CodingChallenge-OrderManagement.pdf for the requirement
@@ -59,3 +61,22 @@ These additional references should also help you:
 
 * [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
 
+
+### Part 2 - Order Management Application Infrastructure on AWS
+
+![Alt text](/images/CCIntHighLevelDesign.png?raw=true "Order Management AWS Infrastructure")
+
+1. On Premise applications can push in order file(s) using S3 API into specific raw S3 Bucket via S3 Interface Endpoint. An alternative is Direct Connect. Using specific IAM roles and STS tokens we can secure the on premise interactions with the S3 (and other required services in general). This also helps with online load of Orders to S3 and eventually load these orders into Order Management Application.
+2. Using Private Link we can provision the S3 interface Endpoint to facilitate on premises interaction with S3 buckets.
+3. We can define and use KMS keys to encrypt data onto S3 and across other AWS services. The KMS keys aLong with S3 bucket policies help us secure the data in transit and at rest.
+4. Users or On Premise apps can invoke the Order Management System application rest end points via API Gateway. API Gateway helps expose the Order Management APIs to internet.
+5. The requests go through an authorizer lambda to ensure only authenticated and authorized requests go through. With API Gateway API Caching (including authorizer) enabled, the endpoint responses are cached to help reduce the number of calls.  
+6. The application load balancers across the Availability Zones help distribute the load across multiple AZs. Also, in the event of downtime of one AZ, the traffic gets routed to the other AZ and helps us avoid any application downtime. Having distributed application across multiple AZs also helps us perform updates with zero downtime.
+7. The ElastiCache helps accelerate application performance. It can also be integrated with AWS RDS. 
+8. We can persist order and trade or other relational data onto AWS RDS with Postgres engine. Setting up primary and standby AWS RDS with replication enabled along with CQRS pattern could help us achieve low latency and serve requests well under 5ms response times.
+9. S3 VPC Gateway endpoint helps us to interact with S3 from within our VPC. Example, AWS RDS could archive data to S3 with appropriate storage classes.  
+10. We can use DynamoDB for auditing, configuration or in use cases where schema is not necessary.
+11. We could leverage Athena on top of S3 to query the S3 data catalogue. Glue helps us manage the data catalogue along with any ETL that could be necessary on the raw data. Lake formation could help manage the data lake as the application data grows. Lambda could help with petty tasks. Cloud watch to store logs and manage event bridge etc.
+12. We can leverage event driven architecture with lambda and SQS along with Step Functions to manage any workflows. Example, depending on the state of the Order Book or Order, we could initiate specific functionalities such as placing trade and upon trade completion event trigger an update to the client report etc. 
+
+### Possibilities are endless!
