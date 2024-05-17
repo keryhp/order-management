@@ -66,6 +66,8 @@ These additional references should also help you:
 
 ![Alt text](/images/CCIntHighLevelDesign.png?raw=true "Order Management AWS Infrastructure")
 
+This design considers single region multi-AZ setup. To serve requests across the globe under < 5ms we can provision multi-region multi-AZ model supported by Network Load Balancer.
+
 1. On Premise applications can push in order file(s) using S3 API into specific raw S3 Bucket via S3 Interface Endpoint. An alternative is Direct Connect. Using specific IAM roles and STS tokens we can secure the on premise interactions with the S3 (and other required services in general). This also helps with online load of Orders to S3 and eventually load these orders into Order Management Application.
 2. Using Private Link we can provision the S3 interface Endpoint to facilitate on premises interaction with S3 buckets.
 3. We can define and use KMS keys to encrypt data onto S3 and across other AWS services. The KMS keys aLong with S3 bucket policies help us secure the data in transit and at rest.
@@ -78,5 +80,6 @@ These additional references should also help you:
 10. We can use DynamoDB for auditing, configuration or in use cases where schema is not necessary.
 11. We could leverage Athena on top of S3 to query the S3 data catalogue. Glue helps us manage the data catalogue along with any ETL that could be necessary on the raw data. Lake formation could help manage the data lake as the application data grows. Lambda could help with petty tasks. Cloud watch to store logs and manage event bridge etc.
 12. We can leverage event driven architecture with lambda and SQS along with Step Functions to manage any workflows. Example, depending on the state of the Order Book or Order, we could initiate specific functionalities such as placing trade and upon trade completion event trigger an update to the client report etc. 
+
 
 ### Possibilities are endless!
